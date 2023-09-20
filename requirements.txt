@@ -1,2 +1,2 @@
 python-pip
-pip install jass-kit.
+pip install jass-kit
