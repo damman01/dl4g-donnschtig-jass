@@ -1,2 +1,3 @@
 python-pip
-pip install jass-kit
+jass-kit
+numpy
