@@ -77,6 +77,8 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+notebooks/data
+notebooks/cifar_net.pth
 
 # IPython
 profile_default/

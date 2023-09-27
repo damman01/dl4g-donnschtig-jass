@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd06e6be-46ea-4db9-a9ba-b61771f592ae" name="Changes" comment="requirements.txt">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jass_intro.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/jass_intro.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-    </list>
+    <list default="true" id="cd06e6be-46ea-4db9-a9ba-b61771f592ae" name="Changes" comment="wip übung 1" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -70,7 +66,7 @@
       <workItem from="1695223992267" duration="54000" />
       <workItem from="1695224069567" duration="118000" />
       <workItem from="1695224222169" duration="32000" />
-      <workItem from="1695720025282" duration="5587000" />
+      <workItem from="1695720025282" duration="5744000" />
     </task>
     <task id="LOCAL-00001" summary="requirements.txt">
       <option name="closed" value="true" />
@@ -96,7 +92,15 @@
       <option name="project" value="LOCAL" />
       <updated>1695222715265</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="wip übung 1">
+      <option name="closed" value="true" />
+      <created>1695744774462</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1695744774462</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -116,6 +120,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="setup" />
     <MESSAGE value="requirements.txt" />
-    <option name="LAST_COMMIT_MESSAGE" value="requirements.txt" />
+    <MESSAGE value="wip übung 1" />
+    <option name="LAST_COMMIT_MESSAGE" value="wip übung 1" />
   </component>
 </project>
