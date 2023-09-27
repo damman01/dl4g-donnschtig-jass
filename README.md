@@ -1,8 +1,6 @@
 # dl4g-donnschtig-jass
 
-pip install jass-kit
-
-pip install numpy
+https://github.com/thomas-koller/jass-kit-py
 
 ## Builden des Images
 
