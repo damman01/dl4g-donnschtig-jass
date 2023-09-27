@@ -1,4 +1,5 @@
 # dl4g-donnschtig-jass
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/damman01/dl4g-donnschtig-jass)
 
 https://github.com/thomas-koller/jass-kit-py
 
