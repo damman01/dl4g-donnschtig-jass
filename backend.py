@@ -1,6 +1,5 @@
 from jass.game.game_util import *
 from jass.game.const import *
-from jass.game.rule_schieber import RuleSchieber
 from jass.game.game_observation import GameObservation
 
 from config import *
@@ -32,7 +31,6 @@ def select_trump(obs: GameObservation):
     return high_score
 
 
-
 def have_puur_with_four(hand: np.ndarray) -> np.ndarray:
     result = np.zeros(4, dtype=int)
 
@@ -45,6 +43,7 @@ def have_puur_with_four(hand: np.ndarray) -> np.ndarray:
             if num_cards >= 4:
                 result[color] = 1
     return result
+
 
 def calculate_trump_selection_score(cards, trump: int) -> int:
     """Calculates the score of a hand for selecting trump.
