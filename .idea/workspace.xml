@@ -4,13 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd06e6be-46ea-4db9-a9ba-b61771f592ae" name="Changes" comment="wip übung 1">
-      <change afterPath="$PROJECT_DIR$/.idea/dl4g-donnschtig-jass.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+    <list default="true" id="cd06e6be-46ea-4db9-a9ba-b61771f592ae" name="Changes" comment="Initial implementation fast api">
+      <change afterPath="$PROJECT_DIR$/backend.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +38,9 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/main.py" />
     <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
   </component>
   <component name="RunManager">
     <configuration name="Fast Api" type="Python.FastAPI">
@@ -74,7 +71,7 @@
       <workItem from="1695224069567" duration="118000" />
       <workItem from="1695224222169" duration="32000" />
       <workItem from="1695720025282" duration="5744000" />
-      <workItem from="1697703136046" duration="552000" />
+      <workItem from="1697703136046" duration="1010000" />
     </task>
     <task id="LOCAL-00001" summary="requirements.txt">
       <option name="closed" value="true" />
@@ -108,7 +105,14 @@
       <option name="project" value="LOCAL" />
       <updated>1695744774462</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Initial implementation fast api">
+      <created>1697704003018</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1697704003018</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -129,6 +133,10 @@
     <MESSAGE value="setup" />
     <MESSAGE value="requirements.txt" />
     <MESSAGE value="wip übung 1" />
-    <option name="LAST_COMMIT_MESSAGE" value="wip übung 1" />
+    <MESSAGE value="Initial implementation fast api" />
+    <option name="LAST_COMMIT_MESSAGE" value="Initial implementation fast api" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/dl4g_donnschtig_jass$Fast_Api.coverage" NAME="Fast Api Coverage Results" MODIFIED="1697703797555" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>
