@@ -145,8 +145,8 @@ The HTTP response code should be OK (200).
 Response message to play card:
 | Element | Example       | Description                                 |
 | ------- | ------------- | ------------------------------------------- |
-|         | {             |                                             |
-|card|"card":"C8"| Selected card to play.|
+|         |               |                                             |
+|card     |"card":"C8"| Selected card to play.|
 ||}||
 
 
