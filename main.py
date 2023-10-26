@@ -36,6 +36,7 @@ async def select_trump(request: Request):
 async def action_play_card(request: Request):
     await play_card(request)
 
+
 @app.post("/play_card")
 async def play_card(request: Request):
     try:
