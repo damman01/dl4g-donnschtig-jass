@@ -1,5 +1,8 @@
+import os
+
 from jass.game.game_observation import GameObservation
 from fastapi import FastAPI, Request, Response, status
+import mistletoe
 
 from backend import Backend
 
@@ -38,7 +41,7 @@ async def play_card(request: Request):
         obs = GameObservation.from_json(body_json)
         if obs is not None:
             print(f"Successfully read in game observation.")
-        card =  backend.play_card(obs)
+        card = backend.play_card(obs)
         return {"card": card}
     except Exception as exception:
         response = Response()
@@ -55,4 +58,20 @@ async def game_info():
     return response
 
 
+@app.get("/")
+async def root():
+    try:
+        if os.path.exists("INTERFACE.md"):
+            print(f"Successfully found INTERFACE.md")
+        with open("INTERFACE.md", "r", encoding="utf-8") as f:
+            markdown_text = mistletoe.markdown(f)
 
+        html_content = markdown_text
+
+        response = Response(content=html_content, media_type="text/html")
+        response.status_code = status.HTTP_200_OK
+        return response
+    except FileNotFoundError:
+        response = Response()
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return response

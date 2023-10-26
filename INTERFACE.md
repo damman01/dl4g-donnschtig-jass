@@ -136,18 +136,19 @@ Example of trump selection message after the client responded with 'push':
 []}]}
 ```
 
-# Play Card
+## Play Card
 
 For the card selection, the client should reply with a http response with a json data in the body of the message.
 
 The HTTP response code should be OK (200).
 
 Response message to play card:
-| Element | Example       | Description                                 |
-| ------- | ------------- | ------------------------------------------- |
-|         |               |                                             |
-|card     |"card":"C8"| Selected card to play.|
-||}||
+
+| Element | Example      | Description                                 |
+| ------- |--------------| ------------------------------------------- |
+|         | {            |                                             |
+|card     | `"card":"C8"` | Selected card to play.                      |
+|         | }            |                                             |
 
 
 Example messages for play card:
