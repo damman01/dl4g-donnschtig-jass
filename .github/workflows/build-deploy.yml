@@ -17,7 +17,7 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          docker buildx build ghcr.io/{{ github.repository }}/{{ github.ref }}
+          docker buildx build ghcr.io/$GITHUB_REPOSITORY/$GITHUB_REF
 
       - name: Deploy to GitHub Pages
         uses: actions/github-script@v6
