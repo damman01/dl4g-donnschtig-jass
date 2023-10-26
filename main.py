@@ -9,7 +9,7 @@ from backend import Backend
 app = FastAPI()
 
 
-@app.post("/action_trump")
+@app.post("//action_trump")
 @app.post("/select_trump")
 async def select_trump(request: Request):
     try:
@@ -32,7 +32,7 @@ async def select_trump(request: Request):
         return response
 
 
-@app.post("/action_play_card")
+@app.post("//action_play_card")
 @app.post("/play_card")
 async def play_card(request: Request):
     try:
