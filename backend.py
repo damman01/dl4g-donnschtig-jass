@@ -1,9 +1,15 @@
+import random
+
 from jass.game.game_util import *
 from jass.game.const import *
 from jass.game.game_observation import GameObservation
 
 from config import *
 
+def play_card(obs: GameObservation):
+    array = convert_one_hot_encoded_cards_to_str_encoded_list(obs.hand)
+    rdm = random.choice(array)
+    return rdm
 
 def select_trump(obs: GameObservation):
     """

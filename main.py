@@ -1,6 +1,7 @@
 from jass.game.game_observation import GameObservation
 from fastapi import FastAPI, Request, Response, status
 from backend import select_trump as backend_select_trump
+from backend import play_card as backend_play_card
 
 app = FastAPI()
 
@@ -27,11 +28,19 @@ async def select_trump(request: Request):
 
 
 @app.post("/play_card")
-async def play_card():
-    response = Response()
-    #play card
-    response.status_code = status.HTTP_200_OK
-    return response
+async def play_card(request: Request):
+    try:
+        body_json: str = await request.json()
+        obs = GameObservation.from_json(body_json)
+        if obs is not None:
+            print(f"Successfully read in game observation.")
+        card = backend_play_card(obs)
+        return {"card": card}
+    except Exception as exception:
+        response = Response()
+        print(f"An unexpected exception occurred: {exception}")
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return response
 
 
 @app.post("/game_info")
