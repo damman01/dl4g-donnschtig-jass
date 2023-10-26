@@ -1,15 +1,10 @@
 from jass.game.game_observation import GameObservation
 from fastapi import FastAPI, Request, Response, status
-
 from backend import Backend
 
 app = FastAPI()
 
 @app.post("/action_trump")
-async def action_trump(request: Request):
-    await select_trump(request)
-
-
 @app.post("/select_trump")
 async def select_trump(request: Request):
     try:
@@ -19,7 +14,7 @@ async def select_trump(request: Request):
         if obs is not None:
             print(f"Successfully read in game observation.")
 
-        trump = backend.backend_select_trump(obs)
+        trump = backend.select_trump(obs)
 
         if trump != -1:
             print(f"Successfully set trump.")
@@ -33,10 +28,6 @@ async def select_trump(request: Request):
 
 
 @app.post("/action_play_card")
-async def action_play_card(request: Request):
-    await play_card(request)
-
-
 @app.post("/play_card")
 async def play_card(request: Request):
     try:

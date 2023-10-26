@@ -24,7 +24,7 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:8000/select_trump
+POST http://localhost:8000/action_trump
 Content-Type: application/json
 
 {"version": "V0.2", "dealer": 0, "currentPlayer": 3, "playerView":
