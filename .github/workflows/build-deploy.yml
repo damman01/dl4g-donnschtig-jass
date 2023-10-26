@@ -19,7 +19,7 @@ jobs:
         run: docker buildx build --push -t ${{ github.repository }}:${{ github.sha }} .
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v5
+        uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
           GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
           BRANCH: gh-pages
