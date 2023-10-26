@@ -1,26 +1,27 @@
-name: Build and Deploy
+name: Build and deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v2
 
-      - name: Build the Docker image
-        run: |
-          docker buildx build -f Dockerfile ghcr.io/$GITHUB_REPOSITORY/$GITHUB_REF
+      - name: Build Docker image
+        run: docker buildx build --push -t ${{ github.repository }}:${{ github.sha }} .
 
       - name: Deploy to GitHub Pages
-        uses: actions/github-script@v6
+        uses: JamesIves/github-pages-deploy-action@v5
         with:
-          script: |
-            gh pages deploy public --target main
+          GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
+          BRANCH: gh-pages
+          PUBLIC_PAGES: /
+          FOLDER: dist

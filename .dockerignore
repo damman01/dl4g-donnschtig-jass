@@ -14,7 +14,7 @@ nosetests.xml
 coverage.xml
 *,cover
 *.log
-.git*
+.git
 tests
 scripts
 postman
@@ -23,4 +23,3 @@ postman
 .idea*
 .venv*
 .vscode*
-notebooks*
