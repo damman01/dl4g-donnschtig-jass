@@ -1,8 +1,10 @@
 from jass.game.game_observation import GameObservation
 from fastapi import FastAPI, Request, Response, status
+
 from backend import Backend
 
 app = FastAPI()
+
 
 @app.post("/action_trump")
 @app.post("/select_trump")
