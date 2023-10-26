@@ -17,7 +17,7 @@ client.test("Response content-type is json", function() {
 });
 
 client.test("Response contains trump", function() {
-  client.assert(response.body.has("trump"), "Response body does not contain 'trump'");
+  client.assert(response.body.hasOwnProperty("trump"), "Response body does not contain 'trump'");
 });
 
 %}
