@@ -5,6 +5,10 @@ from backend import Backend
 
 app = FastAPI()
 
+@app.post("/action_trump")
+async def action_trump(request: Request):
+    await select_trump(request)
+
 
 @app.post("/select_trump")
 async def select_trump(request: Request):
@@ -27,6 +31,10 @@ async def select_trump(request: Request):
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return response
 
+
+@app.post("/action_play_card")
+async def action_play_card(request: Request):
+    await play_card(request)
 
 @app.post("/play_card")
 async def play_card(request: Request):
