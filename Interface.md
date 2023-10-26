@@ -120,7 +120,7 @@ Response message to trump selection:
 Example of trump selection message:
 
 ```
-{"version": "V0. 2 ", "dealer": 0, "currentPlayer": 3, "playerView":
+{"version": "V0.2", "dealer": 0, "currentPlayer": 3, "playerView":
 3, "forehand": -1, "trump": -1, "tricks": [], "jassTyp":
 "SCHIEBER_1000", "player": [{"hand": []}, {"hand": []}, {"hand":
 []}, {"hand": ["D10", "HA", "HJ", "SQ", "S10", "S7", "S6", "CK",
@@ -129,7 +129,7 @@ Example of trump selection message:
 
 Example of trump selection message after the client responded with 'push':
 ```
-{"version": "V0. 2 ", "dealer": 0, "currentPlayer": 1, "playerView":
+{"version": "V0.2", "dealer": 0, "currentPlayer": 1, "playerView":
 1, "forehand": 0, "trump": -1, "tricks": [], "jassTyp":
 "SCHIEBER_1000", "player": [{"hand": []}, {"hand": ["DJ", "D9",
 "H6", "SK", "CA", "CJ", "C9", "C8", "C6"]}, {"hand": []}, {"hand":
@@ -152,7 +152,7 @@ Response message to play card:
 
 Example messages for play card:
 ```
-{"version": "V0. 2 ", "dealer": 1, "currentPlayer": 1, "playerView":
+{"version": "V0.2", "dealer": 1, "currentPlayer": 1, "playerView":
 1 , "trump": 4, "forehand": 0 , "tricks": [{"cards": ["SQ", "S9",
 "S10", "SJ"], "points": 15, "win": 0, "first": 0}, {"cards": ["DQ",
 "DA", "D8"], "first": 0}], "jassTyp": "SCHIEBER_1000", "player":
@@ -160,7 +160,7 @@ Example messages for play card:
 "C8"]}, {"hand": []}, {"hand": []}]}
 ```
 ```
-{"version": "V0. 2 ", "dealer": 1, "currentPlayer": 2, "playerView":
+{"version": "V0.2", "dealer": 1, "currentPlayer": 2, "playerView":
 1, "trump": 4, "forehand": 0 , "tricks": [{"cards": ["SQ", "S9",
 "S10", "SJ"], "points": 15, "win": 0, "first": 0}, {"cards": ["DQ",
 "DA", "D8", "D7"], "points": 22, "win": 3, "first": 0}, {"cards":
@@ -169,7 +169,7 @@ Example messages for play card:
 "CQ", "C9", "C7"]}, {"hand": []}]}
 ```
 ```
-{"version": "V0. 2 ", "dealer": 1, "currentPlayer": 1, "playerView":
+{"version": "V0.2", "dealer": 1, "currentPlayer": 1, "playerView":
 1, "trump": 4, "forehand": 0 , "tricks": [{"cards": ["SQ", "S9",
 "S10", "SJ"], "points": 15, "win": 0, "first": 0}, {"cards": ["DQ",
 "DA", "D8", "D7"], "points": 22, "win": 3, "first": 0}, {"cards":
@@ -179,7 +179,7 @@ Example messages for play card:
 "HK", "H9", "H7", "C8"]}, {"hand": []}, {"hand": []}]}
 ```
 ```
-{"version": "V0. 2 ", "dealer": 3, "currentPlayer": 1, "playerView":
+{"version": "V0.2", "dealer": 3, "currentPlayer": 1, "playerView":
 1, "trump": 5, "forehand": 0 , "tricks": [{"cards": ["CA", "CQ",
 "C10", "CJ"], "points": 15, "win": 0, "first": 2}, {"cards": ["D7",
 "D9", "DA", "DQ"], "points": 3, "win": 0, "first": 0}, {"cards":
