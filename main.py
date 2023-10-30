@@ -2,14 +2,18 @@ import os
 
 from jass.game.game_observation import GameObservation
 from fastapi import FastAPI, Request, Response, status
+from fastapi_route_log.log_request import LoggingRoute
+from fastapi.responses import FileResponse
 import mistletoe
 
 from backend import Backend
 
 app = FastAPI()
+app.router.route_class = LoggingRoute
 
 
 @app.post("//action_trump")
+@app.post("/action_trump")
 @app.post("/select_trump")
 async def select_trump(request: Request):
     try:
@@ -33,6 +37,7 @@ async def select_trump(request: Request):
 
 
 @app.post("//action_play_card")
+@app.post("/action_play_card")
 @app.post("/play_card")
 async def play_card(request: Request):
     try:
@@ -75,3 +80,8 @@ async def root():
         response = Response()
         response.status_code = status.HTTP_404_NOT_FOUND
         return response
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return FileResponse("favicon.ico")
