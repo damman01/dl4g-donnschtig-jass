@@ -14,4 +14,4 @@ Logs: https://app.fl0.com/damman01/schelle-Uusli/dev/dl4g-donnschtig-jass/logs
 
 ## Run locally
 
-uvicorn main:app --proxy-headers --host=0.0.0.0 --port=8090
+```uvicorn main:app --proxy-headers --host=0.0.0.0 --port=8090```

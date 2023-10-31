@@ -46,13 +46,28 @@ client.test("Response contains trump", function() {
 <> 2023-10-26T091855.200.json
 
 ### Test trump on fl0 Server
-POST https://dl4g-donnschtig-jass-dev-cqsg.1.ie-1.fl0.io//action_trump
+POST https://dl4g-donnschtig-jass-dev-cqsg.1.ie-1.fl0.io/action_trump
 Content-Type: application/json
 
 < trump10.json
 > {%
 client.test("Response contains expected trump value", function() {
   var trumpValue = response.body.trump;
-  client.assert(trumpValue === 10, "Expected 'trump' value to be 10 but received '" + trumpValue + "'");
+  client.assert(trumpValue === 10,
+      "Expected 'trump' value to be 10 but received '" + trumpValue + "'");
+});
+%}
+
+
+### Test playcard on fl0 Server
+POST https://dl4g-donnschtig-jass-dev-cqsg.1.ie-1.fl0.io/action_play_card
+Content-Type: application/json
+
+< playcard_1.json
+> {%
+client.test("Response contains expected card value", function() {
+  var cardValue = response.body.card;
+  client.assert(cardValue === 'D6' || cardValue === 'D7',
+      "Expected 'card value to be D6 or D7 but received '" + cardValue + "'");
 });
 %}
