@@ -9,7 +9,7 @@ ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV FLASK_RUN_PORT=5000
 
-COPY requirements.txt /app/
+COPY /app/requirements.txt /app/
 
 # install dependencies
 RUN pip install --upgrade pip
