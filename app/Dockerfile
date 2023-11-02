@@ -8,9 +8,10 @@ ENV PYTHONUNBUFFERED 1
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 
+COPY . /app
+
 # install dependencies
 RUN pip install --upgrade pip
-COPY ./requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app
