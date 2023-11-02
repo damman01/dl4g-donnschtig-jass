@@ -1,9 +1,8 @@
 import unittest
 
-import numpy as np
 from jass.game.const import *
 from jass.game.game_observation import GameObservation
-from backend import select_trump
+from app.backend import select_trump
 
 class TestSelectTrump(unittest.TestCase):
     def test_select_trump(self):
