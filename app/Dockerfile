@@ -14,7 +14,8 @@ WORKDIR /app
 
 # install dependencies
 RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r /app/requirements.txt
 
 EXPOSE 5000
 CMD ["flask", "run"]
