@@ -9,13 +9,14 @@ ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV FLASK_RUN_PORT=5000
 
-COPY . /app
-WORKDIR /app
+COPY requirements.txt /app/
 
 # install dependencies
 RUN pip install --upgrade pip
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r /app/requirements.txt
+
+COPY . /app
 
 EXPOSE 5000
 CMD ["flask", "run"]
