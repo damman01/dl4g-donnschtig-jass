@@ -31,7 +31,7 @@ class AgentUrsli(Agent):
         backend = Backend()
         result = backend.select_trump(obs)
         self._logger.log(logging.INFO, "Trump: {}".format(trump_strings[result]))
-        return result
+        return int(result)
 
     def action_play_card(self, obs: GameObservation) -> int:
         """
@@ -47,4 +47,4 @@ class AgentUrsli(Agent):
         backend = Backend()
         result = backend.play_card(obs)
         self._logger.log(logging.INFO, "Card: {}".format(card_strings[result]))
-        return result
+        return int(result)
