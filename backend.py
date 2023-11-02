@@ -15,7 +15,8 @@ class Backend:
         valid = jass.game.rule_schieber.RuleSchieber.get_valid_cards_from_obs(schieber, obs)
         array = convert_one_hot_encoded_cards_to_str_encoded_list(valid)
         rdm = random.choice(array)
-        return rdm
+        card_id = card_ids[rdm]
+        return card_id
 
     def select_trump(self, obs: GameObservation):
         """

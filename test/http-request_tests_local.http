@@ -1,0 +1,55 @@
+POST http://localhost:5000/Ursli/action_trump
+Content-Type: application/json
+
+< trump10.json
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+client.test("Response content-type is json", function() {
+  var type = response.contentType.mimeType;
+  client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+});
+
+client.test("Response contains trump", function() {
+  client.assert(response.body.hasOwnProperty("trump"), "Response body does not contain 'trump'");
+});
+
+%}
+<> 2023-10-26T091855.200.json
+
+
+### Test playcard on local
+POST http://localhost:5000/Ursli/action_play_card
+Content-Type: application/json
+
+< playcard_1.json
+> {%
+client.test("Response contains expected card value", function() {
+  var cardValue = response.body.card;
+  client.assert(cardValue === 'D6' || cardValue === 'D7',
+      "Expected 'card value to be D6 or D7 but received '" + cardValue + "'");
+});
+%}
+
+
+### Test playcard on local
+POST http://localhost:5000/Ursli/action_play_card
+Content-Type: application/json
+
+< playcard_2.json
+
+
+### Test playcard on local
+POST http://localhost:5000/Ursli/action_play_card
+Content-Type: application/json
+
+< playcard_3.json
+
+
+### Test playcard on local
+POST http://localhost:5000/Ursli/action_play_card
+Content-Type: application/json
+
+< playcard_4.json

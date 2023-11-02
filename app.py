@@ -25,6 +25,10 @@ def create_app():
     app.add_player('Ursli', AgentUrsli())
     app.add_player("random", AgentRandomSchieber())
 
+    @app.route("/")
+    def hello_world():
+        return "<p>Schelle Ursli isch Trumpf!</p>"
+
     return app
 
 

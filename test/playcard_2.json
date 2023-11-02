@@ -1,0 +1,7 @@
+{"version": "V0.2", "dealer": 1, "currentPlayer": 2, "playerView":
+1, "trump": 4, "forehand": 0 , "tricks": [{"cards": ["SQ", "S9",
+"S10", "SJ"], "points": 15, "win": 0, "first": 0}, {"cards": ["DQ",
+"DA", "D8", "D7"], "points": 22, "win": 3, "first": 0}, {"cards":
+["HJ"], "first": 3}], "jassTyp": "SCHIEBER_1000", "player":
+[{"hand": []}, {"hand": []}, {"hand": ["DK", "D9", "H10", "SA",
+"CQ", "C9", "C7"]}, {"hand": []}]}

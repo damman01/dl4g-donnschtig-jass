@@ -1,0 +1,14 @@
+### Test playcard on local random
+POST http://localhost:5000/random/action_trump
+Content-Type: application/json
+
+< ../:/dl4g-donnschtig-jass/test/trump10.json
+
+
+### Test playcard on local random
+POST http://localhost:5000/random/action_play_card
+Content-Type: application/json
+
+< ../:/dl4g-donnschtig-jass/test/playcard_1.json
+
+###
