@@ -9,3 +9,4 @@ fastapi~=0.104.0
 uvicorn==0.23.2
 mistletoe ~=1.2.1
 fastapi_route_log==0.0.7
+tensorflow

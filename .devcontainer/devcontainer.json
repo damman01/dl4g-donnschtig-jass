@@ -14,7 +14,8 @@
     "vscode": {
       "extensions": [
         "ms-toolsai.jupyter",
-        "ms-python.python"
+        "ms-python.python",
+        "github.copilot"
       ]
     }
   }
