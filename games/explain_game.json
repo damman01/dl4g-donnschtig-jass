@@ -1,0 +1,132 @@
+{
+  "game": {
+    "version": "V0.2",
+    "trump": 3, <-- clubs
+    "dealer": 1, <-- dealer -1 = seid a und legt zuerst
+    "currentPlayer": -1, <-- weil Spiel vorbei
+    "forehand": 0, <-- geschoben zu 2
+    "tricks": [
+      {
+        "cards": [
+          "CQ", 0,
+          "C8", 3
+          "C9", 2
+          "HJ" 1
+        ],
+        "points": 19,
+        "win": 2,
+        "first": 0
+      },
+      {
+        "cards": [
+          "CJ", 2
+          "D6", 1
+          "C7", 0
+          "C10" 3
+        ],
+        "points": 30,
+        "win": 2,
+        "first": 2
+      },
+      {
+        "cards": [
+          "HQ", 2
+          "D10", 1
+          "C6", 0
+          "CA" 3
+        ],
+        "points": 24,
+        "win": 3,
+        "first": 2
+      },
+      {
+        "cards": [
+          "S6",3
+          "S10",2
+          "SA",1
+          "S9"0
+        ],
+        "points": 21,
+        "win": 1,
+        "first": 3
+      },
+      {
+        "cards": [
+          "S8",1
+          "SK",0
+          "H7",3
+          "SJ"2
+        ],
+        "points": 6,
+        "win": 0,
+        "first": 1
+      },
+      {
+        "cards": [
+          "SQ",0
+          "H8",3
+          "DJ",2
+          "S7"1
+        ],
+        "points": 5,
+        "win": 0,
+        "first": 0
+      },
+      {
+        "cards": [
+          "DA",0
+          "D7",3
+          "H6",2
+          "D9"1
+        ],
+        "points": 11,
+        "win": 0,
+        "first": 0
+      },
+      {
+        "cards": [
+          "DK", 0
+          "H9", 3
+          "HK", 2
+          "D8" 1
+        ],
+        "points": 8,
+        "win": 0,
+        "first": 0
+      },
+      {
+        "cards": [
+          "H10",0
+          "HA",3
+          "CK",2
+          "DQ"1
+        ],
+        "points": 33,
+        "win": 2,
+        "first": 0
+      }
+    ],
+    "player": [
+      {
+        "hand": []
+      },
+      {
+        "hand": []
+      },
+      {
+        "hand": []
+      },
+      {
+        "hand": []
+      }
+    ],
+    "jassTyp": "SCHIEBER"
+  },
+  "date": "03.01.18 16:27:30",
+  "player_ids": [
+    8897,
+    52048,
+    78006,
+    17433
+  ]
+}
