@@ -3,6 +3,7 @@ from tensorflow import keras
 from keras.callbacks import TensorBoard
 import tensorflow as tf
 from datetime import date
+import tensorflow.keras.mixed_precision as mixed_precision
 
 from trump_training_data_prep_csv import get_train_data as get_train_data_from_csv
 from trump_training_data_prep_json import get_train_data as get_train_data_from_json
@@ -26,8 +27,16 @@ y_categorical_data_train_trump = keras.utils.to_categorical(data[1])
 print(len(x_train_trump))
 print(len(y_categorical_data_train_trump))
 
+# Set up mixed precision
+policy = mixed_precision.Policy('mixed_float16')
+mixed_precision.set_global_policy(policy)
+
+# Create a MirroredStrategy for distributed training
+strategy = tf.distribute.MirroredStrategy()
+
+
 # Model creation
-with tf.device('/GPU:0'):
+with strategy.scope():
     model = keras.Sequential()
     model.add(keras.layers.Dense(21, activation='relu'))
     model.add(keras.layers.Dense(42, activation='relu'))
@@ -44,14 +53,18 @@ with tf.device('/GPU:0'):
     model.add(keras.layers.Dense(140, activation='relu'))
     model.add(keras.layers.Dense(70, activation='relu'))
     model.add(keras.layers.Dense(7, activation='softmax'))
+    # If using mixed precision, the final activation should be float32
+    if policy.name == 'mixed_float16':
+        model.add(keras.layers.Activation('linear', dtype='float32'))
+
     model.compile(loss='bce',
                   optimizer='sgd',
                   metrics=['accuracy'])
-    history = model.fit(x_train_trump, y_categorical_data_train_trump, validation_split=0.20, epochs=10, batch_size=20,
+    history = model.fit(x_train_trump, y_categorical_data_train_trump, validation_split=0.20, epochs=10, batch_size=100,
                         callbacks=[tb_callback])
 
 # Generate a filename with the current date
-today_string = date.today().strftime('%Y%m%d')
+today_string = date.today().strftime('%Y%m%d%h%m')
 filename = f'../models/trumpModel_{today_string}.keras'
 
 # Save the model with the generated name
