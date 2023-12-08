@@ -11,8 +11,15 @@ main branch will automatically deploy to [fl0 - https://dl4g-donnschtig-jass-dev
 Logs: https://app.fl0.com/damman01/schelle-Uusli/dev/dl4g-donnschtig-jass/logs
 
 ## Run locally
-Build:```docker compose build```
 
-Start:```docker compose up -d```
+Build:``docker compose build``
 
-Stop:```docker compose down```
+Start:``docker compose up -d``
+
+Stop:``docker compose down``
+
+Open virtual env ``source /root/.virtualenvs/dl4g-donnschtig-jass/bin/activate``
+
+Install GPU version of TF by running  `python3 -m pip install tensorflow[and-cuda]`
+
+Open TensorBoard with: `tensorboard --logdir=logs`
