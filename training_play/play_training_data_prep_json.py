@@ -1,51 +1,38 @@
+import os
 import numpy as np
 import pandas as pd
 from pathlib import Path
 import json
+import random
 import glob
 from jass.game.game_observation import GameObservation
+from jass.game.game_state import GameState
 
-from training.trump_features import get_features_from_data_frame, get_card_columns, get_forehand_column
-
-
-def adjust_trump(trump_selection):
-    if trump_selection == 10:
-        return 6
-    else:
-        return trump_selection
-
-def adjust_forehand(forehand_from_json):
-    # Forehand (yes = 1, no = 0)
-    if forehand_from_json == -1:
-        return 1
-    else:
-        return 0
+from label_play import LabelPlay
 
 
-def get_train_data():
-
-    #paths_to_data = "./gamelogs/"
-    paths_to_data = "./test_files/"
-
-    print('Searching directory...')
-    files = glob.glob(paths_to_data, recursive=True)
+def get_train_data(path_to_data):
+    print('Searching directory...:', path_to_data)
+    files = []
+    for file in Path(path_to_data).rglob('*.txt'):
+        files.append(file)
     files.sort()
     print('Found {} files.'.format(len(files)))
 
     data_array = []
-    trump_array = []
+    played_card_array = []
     for file_path in files:
         with open(file_path, 'r') as file:
-            for line in file:
+            # Shuffle the lines
+            lines_shuffled = file.readlines()
+            random.shuffle(lines_shuffled)
+            for line in lines_shuffled:
                 data = json.loads(line)
-                obs = GameObservation.from_json(data.get('obs', {}))
-                trump_array.append(adjust_trump(data.get('action', {})))
-                data_array.append(np.append(obs.hand, adjust_forehand(obs.forehand)))
+                state = GameState.from_json(data.get('obs', {}))
+                played_card = data.get('action', {})
+                played_card_array.append(played_card)
+                label_play = LabelPlay.get_label_play(state, played_card, state.player, state.hands)
+                data_array.append(label_play.to_dataframe())
         print("Read in file:", file_path)
-    data = pd.DataFrame(data_array)
 
-    data.columns = get_card_columns() + get_forehand_column()
-
-    x_train_trump = get_features_from_data_frame(data)
-    return [x_train_trump, trump_array]
-
+    return [data_array, np.array(played_card_array, dtype=np.float32)]

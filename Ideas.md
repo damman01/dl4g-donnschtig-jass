@@ -25,14 +25,17 @@ Features Trumpf:
 
 Features Spielen:
 Alles was wir zum Trainieren brauchen muss uns während dem Turnier bekannt sein.
-- eigene Hand
-- wer sagt an
-- forehand
-- trump
-- gespielte / nicht gespielte karten (hot encoded array)
-- Anzahl Trumpfkarten auf Hand
-- Anzahl Trumpfkarten gespielt / nicht gespielt
-- Anzahl vergangener Spielzüge
-- bereits gespielte Karten diese Runde
-- buur / nell von Trumpf bereits gelegt
-- erlaubte zu spielende Karten
+
+Attribut|Gamestate|In Labels
+------------|--------------|-----
+eigene Hand | state.hands|True
+wer sagt an | state.declared_trump|True
+forehand| state.forehand|True
+trump| state.trump|True
+gespielte / nicht gespielte karten (hot encoded array)| state.hands|True
+Anzahl Trumpfkarten auf Hand| 
+Anzahl Trumpfkarten gespielt / nicht gespielt | 
+Anzahl vergangener Spielzüge| state.nr_tricks|True
+bereits gespielte Karten diese Runde| state.nr_cards_in_trick|True
+buur / nell von Trumpf bereits gelegt|
+erlaubte zu spielende Karten|
