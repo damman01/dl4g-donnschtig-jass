@@ -1,78 +1,122 @@
-import json
 import logging
 import os
-import numpy as np
-import keras.backend as keras_backend
-import pandas as pd
-from tensorflow import keras
-from keras.callbacks import TensorBoard
-import tensorflow as tf
-from datetime import date
-import tensorflow.keras.mixed_precision as mixed_precision
+from pathlib import Path
 
-from jass.game.const import team, next_player, same_team
-from jass.game.game_state import GameState
-from jass.game.game_util import convert_one_hot_encoded_cards_to_str_encoded_list, get_cards_encoded_from_str
+import pandas as pd
+import tensorflow as tf
+import tensorflow.keras.mixed_precision as mixed_precision
+from keras.callbacks import TensorBoard
+from tensorflow import keras
+
 from play_training_data_prep_json import get_train_data
 
-if tf.test.gpu_device_name():
-    print('Default GPU Device: {}'.format(tf.test.gpu_device_name()))
-else:
-    print("Please install GPU version of TF by running  'python3 -m pip install tensorflow[and-cuda]' in your WSL "
-          "Environment!")
-    raise Exception("Please install GPU version of TF by running  'python3 -m pip install tensorflow[and-cuda]'")
 
-# open TensorBoard with: 'tensorboard --logdir=logs' in separate terminal
-tb_callback = TensorBoard(log_dir='./logs', histogram_freq=1, write_graph=True)
+def data_generator(file_list: list):
+    for file_name in file_list:
+        data = get_train_data(file_name)
+        x_train = pd.concat(data[0], ignore_index=True).values
+        y_categorical_data_train = keras.utils.to_categorical(data[1])
+        print("x_train length:", len(x_train))
+        print("y_categorical_data_train length:", len(y_categorical_data_train))
+        print("y_categorical_data_train length_shape:", y_categorical_data_train.shape)
 
-paths_to_data = "./gamelogs/jass_game_0002/"
-#paths_to_data = "./test_files/"
+        yield x_train, y_categorical_data_train
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
-data = get_train_data(os.path.join(script_dir, paths_to_data))
 
-x_train = pd.concat(data[0], ignore_index=True)
-y_categorical_data_train = keras.utils.to_categorical(data[1])
+def train_model(model, data_generator):
+    if tf.test.gpu_device_name():
+        print('Default GPU Device: {}'.format(tf.test.gpu_device_name()))
+    else:
+        print("Please install GPU version of TF by running  'python3 -m pip install tensorflow[and-cuda]' in your WSL "
+              "Environment!")
+        raise Exception("Please install GPU version of TF by running  'python3 -m pip install tensorflow[and-cuda]'")
 
-print("x_train length:", len(x_train))
+    # open TensorBoard with: 'tensorboard --logdir=logs' in separate terminal
+    tb_callback = TensorBoard(log_dir='./logs', histogram_freq=1, write_graph=True)
 
-print("y_categorical_data_train length:", len(y_categorical_data_train))
-print("y_categorical_data_train length_shape:", y_categorical_data_train.shape)
+    history = model.fit(
+        data_generator,
+        steps_per_epoch=len(file_list),
+        epochs=10,
+        callbacks=[tb_callback]
+    )
+    return history
 
-# Set up mixed precision
-policy = mixed_precision.Policy('mixed_float16')
-mixed_precision.set_global_policy(policy)
 
-# Create a MirroredStrategy for distributed training
-strategy = tf.distribute.MirroredStrategy()
+if __name__ == "__main__":
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
 
-# Model creation
-with strategy.scope():
-    model = keras.Sequential()
-    model.add(keras.layers.Dense(21, activation='relu'))
-    model.add(keras.layers.Dense(42, activation='relu'))
-    model.add(keras.layers.Dense(84, activation='relu'))
-    model.add(keras.layers.Dense(168, activation='relu'))
-    model.add(keras.layers.Dense(210, activation='relu'))
-    model.add(keras.layers.LeakyReLU())  # Addresses the "dying ReLU" problem by allowing a small gradient for
-    # negative inputs, preventing some units from dying during training.
-    model.add(keras.layers.ELU(alpha=1.0))  # Smooths the transition for negative inputs, allowing a mean activation
-    # closer to zero, which can speed up learning. alpha: float, slope of negative section. Defaults to 1.0.
-    model.add(keras.layers.Dropout(rate=0.1618))  # Dropout layers are employed to prevent overfitting in neural
-    # networks by randomly setting a fraction of input units to zero during training. The Dropout layer randomly sets
-    # input units to 0 with a frequency of rate at each step during training time, which helps prevent overfitting.
-    model.add(keras.layers.Dense(140, activation='relu'))
-    model.add(keras.layers.Dense(70, activation='relu'))
-    model.add(keras.layers.Dense(35, activation='softmax'))
-    # If using mixed precision, the final activation should be float32
-    if policy.name == 'mixed_float16':
-        model.add(keras.layers.Activation('linear', dtype='float32'))
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    paths_to_data = os.path.join(script_dir, "./gamelogs/")
+    #paths_to_data = os.path.join(script_dir, "./test_files/")
 
-    model.compile(loss='bce',
+    # Set up mixed precision
+    policy = mixed_precision.Policy('mixed_float16')
+    mixed_precision.set_global_policy(policy)
+
+    # Create a MirroredStrategy for distributed training
+    if tf.config.list_physical_devices('GPU'):
+        strategy = tf.distribute.MirroredStrategy()
+    else:
+        strategy = None
+
+    # Model creation
+    with strategy.scope():
+        model = keras.Sequential([
+            keras.layers.Dense(21, activation='relu'),
+            keras.layers.Dense(42, activation='relu'),
+            keras.layers.Dense(84, activation='relu'),
+            keras.layers.Dense(168, activation='relu'),
+            keras.layers.Dense(210, activation='relu'),
+            keras.layers.LeakyReLU(),
+            keras.layers.ELU(alpha=1.0),
+            keras.layers.Dropout(rate=0.1618),
+            keras.layers.Dense(140, activation='relu'),
+            keras.layers.Dense(70, activation='relu'),
+            keras.layers.Dense(36, activation='softmax')
+        ])
+        if policy.name == 'mixed_float16':
+            model.add(keras.layers.Activation('linear', dtype='float32'))
+
+        model.compile(loss='categorical_crossentropy',
                   optimizer='sgd',
                   metrics=['accuracy'])
 
-    history = model.fit(x_train, y_categorical_data_train, validation_split=0.20, epochs=10, batch_size=200,
-                        callbacks=[tb_callback])
+    print('Searching directory...:', paths_to_data)
+    file_list = []
 
-model.save('../models/playModel.keras')
+    for file in Path(paths_to_data).rglob('*.txt'):
+        file_list.append(file)
+    file_list.sort()
+    print('Found {} files.'.format(len(file_list)))
+
+    train_files = file_list[:int(len(file_list) * 0.7)]
+    val_files = file_list[int(len(file_list) * 0.8):]
+    tes_files = file_list[int(len(file_list) * 0.9):]
+
+    # Create the generators
+    train_gen = data_generator(train_files)
+    val_gen = data_generator(val_files)
+
+    # Train the model
+    history = train_model(model, train_gen)
+    logger.info("Trained model with history:")
+    logger.info(history)
+
+    # Save the model
+    model.save('../models/playModel.keras')
+
+    # Evaluate the model on the validation set
+    score = model.evaluate(val_gen, steps=len(val_files))
+    logger.info("Evaluation on validation set:")
+    logger.info(score)
+
+    # Test the model on new data
+    test_files = file_list[int(len(file_list) * 0.8) + 1:]
+    test_gen = data_generator(test_files)
+
+    test_loss, test_acc = model.evaluate(test_gen, steps=len(test_files))
+    logger.info("Testing on new data:")
+    logger.info("Test loss:", test_loss)
+    logger.info("Test accuracy:", test_acc)
