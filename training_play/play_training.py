@@ -64,14 +64,17 @@ if __name__ == "__main__":
     # Model creation
     with strategy.scope():
         model = keras.Sequential([
-            keras.layers.Dense(21, activation='relu'),
-            keras.layers.Dense(42, activation='relu'),
-            keras.layers.Dense(84, activation='relu'),
-            keras.layers.Dense(168, activation='relu'),
-            keras.layers.Dense(210, activation='relu'),
-            keras.layers.LeakyReLU(),
-            keras.layers.ELU(alpha=1.0),
-            keras.layers.Dropout(rate=0.1618),
+            keras.layers.Dense(154, activation='relu'),
+            keras.layers.Dense(310, activation='relu'),
+            keras.layers.Dense(620, activation='relu'),
+            keras.layers.Dense(1240, activation='relu'),
+            keras.layers.Dense(2480, activation='relu'),
+            #keras.layers.LeakyReLU(),
+            #keras.layers.ELU(alpha=1.0),
+            #keras.layers.Dropout(rate=0.1618),
+            keras.layers.Dense(1240, activation='relu'),
+            keras.layers.Dense(620, activation='relu'),
+            keras.layers.Dense(310, activation='relu'),
             keras.layers.Dense(140, activation='relu'),
             keras.layers.Dense(70, activation='relu'),
             keras.layers.Dense(36, activation='softmax')

@@ -26,7 +26,6 @@ class LabelPlay:
 
     @dataclass
     class LabelPlay:
-        card_played: int
         points_in_trick_own: int
         points_in_trick_other: int
         trick_winner: int
@@ -40,7 +39,6 @@ class LabelPlay:
         hands: np.ndarray = field(default_factory=list)
 
     def __init__(self,
-                 card_played: int,
                  points_in_trick_own: int,
                  points_in_trick_other: int,
                  trick_winner: int,
@@ -52,7 +50,6 @@ class LabelPlay:
                  nr_tricks: int,
                  nr_cards_in_trick: int,
                  hands: np.ndarray):
-        self.card_played = card_played
         self.points_in_trick_own = points_in_trick_own
         self.points_in_trick_other = points_in_trick_other
         self.trick_winner = trick_winner
@@ -81,7 +78,6 @@ class LabelPlay:
             a LabelPlay with this information
         """
         nr_trick, card_in_trick = divmod(card_nr, 4)
-        card = int(game.tricks[nr_trick, card_in_trick])
 
         team_own = team[player]
         team_other = team[next_player[player]]
@@ -94,8 +90,7 @@ class LabelPlay:
             points_in_trick_own = 0
             points_in_trick_other = game.trick_points[nr_trick]
 
-        label_play = LabelPlay(card_played=card,
-                                points_in_game_own=game.points[team_own],
+        label_play = LabelPlay(points_in_game_own=game.points[team_own],
                                 points_in_game_other=game.points[team_other],
                                 trick_winner=trick_winner,
                                 points_in_trick_own=points_in_trick_own,
@@ -115,7 +110,6 @@ class LabelPlay:
             dict that can be serialized to json
         """
         return dict(
-            card_played=int(self.card_played),
             points_in_trick_own=int(self.points_in_trick_own),
             points_in_trick_other=int(self.points_in_trick_other),
             trick_winner=int(self.trick_winner),
@@ -151,8 +145,7 @@ class LabelPlay:
             logging.getLogger(__name__).error('Key error: {}, data: {}'.format(e, data))
             raise e
 
-        return LabelPlay(card_played=data['card_played'],
-                        points_in_trick_own=data['points_in_trick_own'],
+        return LabelPlay(points_in_trick_own=data['points_in_trick_own'],
                         points_in_trick_other=data['points_in_trick_other'],
                         trick_winner=data['trick_winner'],
                         points_in_game_own=data['points_in_game_own'],
@@ -177,7 +170,6 @@ class LabelPlay:
         # Convert the other attributes to a DataFrame
         df = pd.DataFrame(
             data={
-                "card_played": [self.card_played],
                 "points_in_trick_own": [self.points_in_trick_own],
                 "points_in_trick_other": [self.points_in_trick_other],
                 "trick_winner": [self.trick_winner],
