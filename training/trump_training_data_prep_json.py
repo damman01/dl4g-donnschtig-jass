@@ -13,6 +13,7 @@ def adjust_trump(trump_selection):
     else:
         return trump_selection
 
+
 def adjust_forehand(forehand_from_json):
     # Forehand (yes = 1, no = 0)
     if forehand_from_json == -1:
@@ -54,9 +55,9 @@ def get_train_data():
                 obs = GameObservation.from_json(data.get('obs', {}))
                 trump_array.append(adjust_trump(data.get('action', {})))
                 data_array.append(np.append(obs.hand, adjust_forehand(obs.forehand)))
-        print("Read in file: " + path_to_data)
+        print("Read in file: " + str(path_to_data))
     data = pd.DataFrame(data_array)
-
+    print("Total number of rows read in: " + str(len(data.index)))
     data.columns = get_card_columns() + get_forehand_column()
 
     x_train_trump = get_features_from_data_frame(data)
