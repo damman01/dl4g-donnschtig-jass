@@ -1,13 +1,15 @@
-#label_play.py
+# label_play.py
 import logging
 
 import numpy as np
 import pandas as pd
 from dataclasses import dataclass, asdict, field
 
-from jass.game.const import team, next_player, same_team
+from jass.game.const import team, next_player, same_team, card_values
 from jass.game.game_state import GameState
 from jass.game.game_util import convert_one_hot_encoded_cards_to_str_encoded_list, get_cards_encoded_from_str
+from jass.game.rule_schieber import RuleSchieber
+
 
 class LabelPlay:
     """
@@ -36,7 +38,8 @@ class LabelPlay:
         forehand: int
         nr_tricks: int
         nr_cards_in_trick: int
-        hands: np.ndarray = field(default_factory=list)
+        hand: np.ndarray = field(default_factory=list)
+        tricks: np.ndarray = field(default_factory=list)
 
     def __init__(self,
                  points_in_trick_own: int,
@@ -49,7 +52,8 @@ class LabelPlay:
                  forehand: int,
                  nr_tricks: int,
                  nr_cards_in_trick: int,
-                 hands: np.ndarray):
+                 hand: np.ndarray,
+                 tricks: np.ndarray):
         self.points_in_trick_own = points_in_trick_own
         self.points_in_trick_other = points_in_trick_other
         self.trick_winner = trick_winner
@@ -60,10 +64,12 @@ class LabelPlay:
         self.forehand = forehand
         self.nr_tricks = nr_tricks
         self.nr_cards_in_trick = nr_cards_in_trick
-        self.hands = hands
+        self.hand = hand
+        self.tricks = tricks
+
 
     @classmethod
-    def get_label_play(cls, game: GameState,  card_nr: int, player: int, hands: np.ndarray,) -> 'LabelPlay':
+    def get_label_play(cls, game: GameState, card_nr: int) -> 'LabelPlay':
         """
         Generate a label play from the data. The player and hands arguments could be calculated from the game,
         however as is it expensive to calculate, it has to be submitted as an argument, so it could be used for
@@ -72,35 +78,42 @@ class LabelPlay:
         Args:
             game: completed game
             card_nr: which card was played in the game (0..35)
-            player: player who played card (derived)
-            hands: hands at beginning of the game (derived)
         Returns:
             a LabelPlay with this information
         """
-        nr_trick, card_in_trick = divmod(card_nr, 4)
+        nr_trick = game.nr_tricks
+        player = game.player
+
+        hand = game.hands[player]
+        tricks = game.tricks
 
         team_own = team[player]
         team_other = team[next_player[player]]
 
-        trick_winner = game.trick_winner[nr_trick]
+        rule = RuleSchieber()
+
+        points_in_trick = rule.calc_points(game.current_trick, nr_trick == 8, game.trump)
+        trick_winner = rule.calc_winner(game.current_trick, game.trick_first_player, game.trump)[nr_trick]
+
         if same_team[player, trick_winner]:
-            points_in_trick_own = game.trick_points[nr_trick]
+            points_in_trick_own = points_in_trick
             points_in_trick_other = 0
         else:
             points_in_trick_own = 0
-            points_in_trick_other = game.trick_points[nr_trick]
+            points_in_trick_other = points_in_trick
 
         label_play = LabelPlay(points_in_game_own=game.points[team_own],
-                                points_in_game_other=game.points[team_other],
-                                trick_winner=trick_winner,
-                                points_in_trick_own=points_in_trick_own,
-                                points_in_trick_other=points_in_trick_other,
-                                declared_trump=game.declared_trump,
-                                trump=game.trump,
-                                forehand=game.forehand,
-                                nr_tricks=game.nr_tricks,
-                                nr_cards_in_trick=game.nr_cards_in_trick,
-                                hands=hands)
+                               points_in_game_other=game.points[team_other],
+                               trick_winner=trick_winner,
+                               points_in_trick_own=points_in_trick_own,
+                               points_in_trick_other=points_in_trick_other,
+                               declared_trump=game.declared_trump,
+                               trump=game.trump,
+                               forehand=game.forehand,
+                               nr_tricks=game.nr_tricks,
+                               nr_cards_in_trick=game.nr_cards_in_trick,
+                               hand=hand,
+                               tricks=tricks)
         return label_play
 
     def to_json(self) -> dict:
@@ -120,10 +133,8 @@ class LabelPlay:
             forehand=int(self.forehand),
             nr_tricks=int(self.nr_tricks),
             nr_cards_in_trick=int(self.nr_cards_in_trick),
-            hands_player_0=(self.hands[0, :]),
-            hands_player_1=(self.hands[1, :]),
-            hands_player_2=(self.hands[2, :]),
-            hands_player_3=(self.hands[3, :])
+            hand_player=self.hand,
+            tricks=self.tricks
         )
 
     @classmethod
@@ -135,27 +146,26 @@ class LabelPlay:
         Returns:
             label from the data
         """
-        hands = np.zeros(shape=[4, 36], dtype=np.int32)
+        hand = np.zeros(shape=[1, 36], dtype=np.int32)
         try:
-            hands[0, :] = get_cards_encoded_from_str(data['hands_player_0'])
-            hands[1, :] = get_cards_encoded_from_str(data['hands_player_1'])
-            hands[2, :] = get_cards_encoded_from_str(data['hands_player_2'])
-            hands[3, :] = get_cards_encoded_from_str(data['hands_player_3'])
+            hand = get_cards_encoded_from_str(data['hand_player'])
+
         except KeyError as e:
             logging.getLogger(__name__).error('Key error: {}, data: {}'.format(e, data))
             raise e
 
         return LabelPlay(points_in_trick_own=data['points_in_trick_own'],
-                        points_in_trick_other=data['points_in_trick_other'],
-                        trick_winner=data['trick_winner'],
-                        points_in_game_own=data['points_in_game_own'],
-                        points_in_game_other=data['points_in_game_other'],
-                        declared_trump=data['declared_trump'],
-                        trump=data['trump'],
-                        forehand=data['forehand'],
-                        nr_tricks=data['nr_tricks'],
-                        nr_cards_in_trick=data['nr_cards_in_trick'],
-                        hands=hands)
+                         points_in_trick_other=data['points_in_trick_other'],
+                         trick_winner=data['trick_winner'],
+                         points_in_game_own=data['points_in_game_own'],
+                         points_in_game_other=data['points_in_game_other'],
+                         declared_trump=data['declared_trump'],
+                         trump=data['trump'],
+                         forehand=data['forehand'],
+                         nr_tricks=data['nr_tricks'],
+                         nr_cards_in_trick=data['nr_cards_in_trick'],
+                         hand=hand,
+                         tricks=data['tricks'])
 
     def to_dataframe(self):
         """
@@ -164,8 +174,11 @@ class LabelPlay:
             DataFrame: The LabelPlay object in DataFrame format.
         """
         # Convert the hands array to a DataFrame
-        hands_df = pd.DataFrame(self.hands.flatten().reshape(1, -1),
-                                columns=[f'cards_player_{i // 36}_card_{i % 36}' for i in range(self.hands.size)])
+        hand_df = pd.DataFrame(self.hand.flatten().reshape(1, -1),
+                                columns=[f'hand_card_{i % 36}' for i in range(self.hand.size)])
+
+        tricks_df = pd.DataFrame(self.tricks.flatten().reshape(1, -1),
+                                columns=[f'trick_{i // 4}_card_{i % 4}' for i in range(self.tricks.size)])
 
         # Convert the other attributes to a DataFrame
         df = pd.DataFrame(
@@ -184,6 +197,6 @@ class LabelPlay:
         )
 
         # Concatenate the two DataFrames along the columns axis
-        df = pd.concat([df, hands_df], axis=1)
+        df = pd.concat([df, hand_df, tricks_df], axis=1)
 
         return df
