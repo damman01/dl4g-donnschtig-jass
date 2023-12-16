@@ -77,8 +77,8 @@ def train_model(learning_model, train_dataset, val_dataset):
 def create_model():
     training_model = keras.Sequential([
         keras.layers.Input(shape=(82,)),
-        keras.layers.Reshape((1, 82)),  # Reshape input data to add a time step dimension
-        keras.layers.LSTM(256),  # Recurrent Layer (LSTM, GRU): These layers are used for
+        # keras.layers.Reshape((1, 82)),  # Reshape input data to add a time step dimension
+        # keras.layers.LSTM(256),  # Recurrent Layer (LSTM, GRU): These layers are used for
         # sequence data like time series or text where the order of inputs matters. the Attention layer expects
         # its input to be a sequence of vectors, not a single vector. The LSTM layer, by default, returns only
         # the last output in the output sequence. By setting return_sequences=True, it will return the full
@@ -86,7 +86,7 @@ def create_model():
         keras.layers.Dense(256, activation='relu'),
         keras.layers.Dense(512, activation='relu'),
         keras.layers.BatchNormalization(),  # BatchNormalization: These layers can help accelerate training.
-        keras.layers.Dense(1024, activation='relu'),
+        # keras.layers.Dense(1024, activation='relu'),
         # keras.layers.Dense(1600, activation='relu'),
         # keras.layers.Dense(3200, activation='relu'),
         # keras.layers.LeakyReLU(),
@@ -94,7 +94,7 @@ def create_model():
         keras.layers.Dropout(rate=0.3),
         # keras.layers.Dense(1600, activation='relu'),
         # keras.layers.Dense(800, activation='relu'),
-        keras.layers.Dense(512, activation='relu'),
+        # keras.layers.Dense(512, activation='relu'),
         keras.layers.Dense(256, activation='relu'),
         # keras.layers.Dense(100, activation='relu'),
         keras.layers.Dense(36, activation='softmax')
@@ -118,9 +118,9 @@ if __name__ == "__main__":
     logger.setLevel(logging.INFO)
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    paths_to_data = os.path.join(script_dir, "./gamelogs/")
+    # paths_to_data = os.path.join(script_dir, "./gamelogs/")
     # paths_to_data = os.path.join(script_dir, "./gamelogs/jass_game_0001/")
-    # paths_to_data = os.path.join(script_dir, "./test_files/jass_game_0001/")
+    paths_to_data = os.path.join(script_dir, "./test_files/jass_game_0001/")
 
     # Set up mixed precision
     policy = mixed_precision.Policy('mixed_float16')
