@@ -3,21 +3,21 @@ import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 import logging
-import random
 
 from pathlib import Path
 
-import pandas as pd
 import tensorflow as tf
 import tensorflow.keras.mixed_precision as mixed_precision
-from keras.callbacks import TensorBoard
+from keras.callbacks import TensorBoard, ModelCheckpoint, EarlyStopping
 from tensorflow import keras
 
 from play_training_data_prep_json import get_train_data
 
+#add a constant value for the shape of the input data
+INPUT_FEATURES = 46
 
 # This function generates training data from a list of files
-def data_generator(list_files: list, batch_size: int = 1000):
+def data_generator(list_files: list, batch_size: int = 36):
     # Convert PosixPath objects to strings
     list_files = [str(path) for path in list_files]
 
@@ -34,13 +34,13 @@ def data_generator(list_files: list, batch_size: int = 1000):
     )
 
     # Define the output shapes
-    dataset = dataset.map(lambda x, y: (tf.reshape(x, (82,)), tf.reshape(y, (36,))))
+    dataset = dataset.map(lambda x, y: (tf.reshape(x, (INPUT_FEATURES,)), tf.reshape(y, (36,))))
 
     # Shuffle and batch the dataset
-    dataset = dataset.shuffle(buffer_size=1000).batch(batch_size)
+    dataset = dataset.batch(batch_size)
 
     logger.info("Data generation completed.")  # Log the end of data generation
-    return dataset.prefetch(tf.data.experimental.AUTOTUNE)
+    return dataset.cache().prefetch(tf.data.experimental.AUTOTUNE)
 
     # while True:
     #     for file_name in list_files:
@@ -68,12 +68,28 @@ def train_model(learning_model, train_dataset, val_dataset):
     # open TensorBoard with: 'tensorboard --logdir=logs' in separate terminal
     tb_callback = TensorBoard(log_dir='./logs', histogram_freq=1, write_graph=True)
 
+    checkpoint_path = "../models/checkpoints/cp-{epoch:04d}.keras"
+    checkpoint_dir = os.path.dirname(checkpoint_path)
+
+    cp_callback = ModelCheckpoint(filepath=checkpoint_path,
+                                  verbose=1,
+                                  save_weights_only=False,
+                                  save_freq='epoch')  # Save weights, every epoch.
+
     logger.info("Starting training...")  # Log the start of training
+
+    early_stopping = EarlyStopping(
+        monitor='val_loss',
+        min_delta=0.001,
+        patience=5,
+        verbose=1,
+        restore_best_weights=True
+    )
 
     model_history = learning_model.fit(
         train_dataset,
-        epochs=10,
-        callbacks=[tb_callback],
+        epochs=40,
+        callbacks=[cp_callback, tb_callback, early_stopping],
         validation_data=val_dataset
     )
 
@@ -84,34 +100,19 @@ def train_model(learning_model, train_dataset, val_dataset):
 
 def create_model():
     training_model = keras.Sequential([
-        keras.layers.Input(shape=(82,)),
-        # keras.layers.Reshape((1, 82)),  # Reshape input data to add a time step dimension
-        # keras.layers.LSTM(256),  # Recurrent Layer (LSTM, GRU): These layers are used for
-        # sequence data like time series or text where the order of inputs matters. the Attention layer expects
-        # its input to be a sequence of vectors, not a single vector. The LSTM layer, by default, returns only
-        # the last output in the output sequence. By setting return_sequences=True, it will return the full
-        # sequence of outputs, which can then be used as input to the Attention layer.
-        keras.layers.Dense(256, activation='relu'),
-        keras.layers.Dense(512, activation='relu'),
-        keras.layers.BatchNormalization(),  # BatchNormalization: These layers can help accelerate training.
-        # keras.layers.Dense(1024, activation='relu'),
+        keras.layers.Input(shape=(INPUT_FEATURES,)),
+        keras.layers.Dense(32, activation='relu'),
+        keras.layers.Dense(64, activation='relu'),
+        # keras.layers.BatchNormalization(),  # BatchNormalization: These layers can help accelerate training.
+        # keras.layers.Dropout(rate=0.2),
         # keras.layers.Dense(1600, activation='relu'),
-        # keras.layers.Dense(3200, activation='relu'),
-        # keras.layers.LeakyReLU(),
-        # keras.layers.ELU(alpha=1.0),
-        keras.layers.Dropout(rate=0.3),
-        # keras.layers.Dense(1600, activation='relu'),
-        # keras.layers.Dense(800, activation='relu'),
-        # keras.layers.Dense(512, activation='relu'),
-        keras.layers.Dense(256, activation='relu'),
-        # keras.layers.Dense(100, activation='relu'),
         keras.layers.Dense(36, activation='softmax')
     ])
     if policy.name == 'mixed_float16':
         training_model.add(keras.layers.Dense(36, activation='softmax', dtype='float32'))
 
-    optimizer = keras.optimizers.RMSprop(learning_rate=0.0001)
-    # optimizer = keras.optimizers.Adam(learning_rate=0.001)
+    # optimizer = keras.optimizers.RMSprop(learning_rate=0.001)
+    optimizer = keras.optimizers.Adam(learning_rate=0.01)
     training_model.compile(loss='categorical_crossentropy',
                            optimizer=optimizer,
                            metrics=['accuracy', 'Precision', 'Recall'])
@@ -183,5 +184,7 @@ if __name__ == "__main__":
 
     test_loss, test_acc, test_precision, test_recall = model.evaluate(test_gen, steps=len(test_files))
     logger.info("Testing on new data:")
-    logger.info("Test loss:", test_loss)
-    logger.info("Test accuracy:", test_acc)
+    logger.info(f"Test loss: {test_loss}")
+    logger.info(f"Test accuracy: {test_acc}")
+    logger.info(f"Test precision: {test_precision}")
+    logger.info(f"Test recall: {test_recall}")

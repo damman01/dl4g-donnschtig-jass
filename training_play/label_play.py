@@ -177,8 +177,10 @@ class LabelPlay:
         hand_df = pd.DataFrame(self.hand.flatten().reshape(1, -1),
                                 columns=[f'hand_card_{i % 36}' for i in range(self.hand.size)])
 
-        tricks_df = pd.DataFrame(self.tricks.flatten().reshape(1, -1),
-                                columns=[f'trick_{i // 4}_card_{i % 4}' for i in range(self.tricks.size)])
+        # tricks_df = pd.DataFrame(self.tricks.flatten().reshape(1, -1),
+        #                         columns=[f'trick_{i // 4}_card_{i % 4}' for i in range(self.tricks.size)])
+        tricks_df = pd.DataFrame(self.tricks[self.nr_tricks].flatten().reshape(1, -1),
+                                columns=[f'trick_card_{i % 4}' for i in range(self.tricks[self.nr_tricks].size)])
 
         # Convert the other attributes to a DataFrame
         df = pd.DataFrame(
@@ -186,11 +188,11 @@ class LabelPlay:
                 "points_in_trick_own": [self.points_in_trick_own],
                 "points_in_trick_other": [self.points_in_trick_other],
                 "trick_winner": [self.trick_winner],
-                "points_in_game_own": [self.points_in_game_own],
-                "points_in_game_other": [self.points_in_game_other],
-                "declared_trump": [self.declared_trump],
+                # "points_in_game_own": [self.points_in_game_own],
+                # "points_in_game_other": [self.points_in_game_other],
+                # "declared_trump": [self.declared_trump],
                 "trump": [self.trump],
-                "forehand": [self.forehand],
+                # "forehand": [self.forehand],
                 "nr_tricks": [self.nr_tricks],
                 "nr_cards_in_trick": [self.nr_cards_in_trick]
             }

@@ -41,7 +41,8 @@ def get_train_data(line) -> (DataFrame, DataFrame):
                           trick_6_card_1=(-1, 35), trick_6_card_2=(-1, 35), trick_6_card_3=(-1, 35),
                           trick_7_card_0=(-1, 35), trick_7_card_1=(-1, 35), trick_7_card_2=(-1, 35),
                           trick_7_card_3=(-1, 35), trick_8_card_0=(-1, 35), trick_8_card_1=(-1, 35),
-                          trick_8_card_2=(-1, 35), trick_8_card_3=(-1, 35))
+                          trick_8_card_2=(-1, 35), trick_8_card_3=(-1, 35), trick_card_0=(-1, 35),
+                          trick_card_1=(-1, 35), trick_card_2=(-1, 35), trick_card_3=(-1, 35))
 
     # print("Data Frame before Normalize:", data_frame.head())
     # data_frame.to_csv('x_train_before.csv', index=False)
@@ -50,7 +51,9 @@ def get_train_data(line) -> (DataFrame, DataFrame):
     for feature, feature_range in feature_ranges.items():
         # print("Data Frame Feature Value:", data_frame[feature][0])
         # print("Feature:", feature, "Range:", feature_range)
-        data_frame[feature] = (data_frame[feature] - feature_range[0]) / (feature_range[1] - feature_range[0])
+        # if the feature is in data_frame Normalize the feature
+        if feature in data_frame:
+            data_frame[feature] = (data_frame[feature] - feature_range[0]) / (feature_range[1] - feature_range[0])
         # print("Data Frame Feature Normalized Value:", data_frame[feature][0])
 
     # data_frame.to_csv('x_train_after.csv', index=False)
