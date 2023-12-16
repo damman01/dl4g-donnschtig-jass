@@ -2,7 +2,7 @@ from jass.game.const import card_strings
 from jass.game.game_observation import GameObservation
 from jass.game.rule_schieber import RuleSchieber
 from jass.agents.agent import Agent
-from backend import Backend
+from backend_v2 import Backend
 import logging
 
 # German strings for trumps

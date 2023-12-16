@@ -1,0 +1,10 @@
+Adam:
+loss: 0.2252 - accuracy: 0.6256 - precision: 0.6353 - recall: 0.6056 - f1_score: 0.6200 - val_loss: 0.2340 - val_accuracy: 0.6172 - val_precision: 0.6261 - val_recall: 0.6021 - val_f1_score: 0.6138
+SGD:
+loss: 0.3330 - accuracy: 0.4662 - precision: 0.5047 - recall: 0.3376 - f1_score: 0.4037 - val_loss: 0.3256 - val_accuracy: 0.4721 - val_precision: 0.5010 - val_recall: 0.3821 - val_f1_score: 0.4332
+Adam and removed layers between special layers:
+loss: 0.2175 - accuracy: 0.6356 - precision: 0.6466 - recall: 0.6158 - f1_score: 0.6307 - val_loss: 0.2258 - val_accuracy: 0.6173 - val_precision: 0.6316 - val_recall: 0.5854 - val_f1_score: 0.6075
+Removed special layers:
+loss: 0.2170 - accuracy: 0.6358 - precision: 0.6461 - recall: 0.6142 - f1_score: 0.6297 - val_loss: 0.2289 - val_accuracy: 0.6156 - val_precision: 0.6277 - val_recall: 0.5909 - val_f1_score: 0.6087
+RMSPROP optimizer:
+loss: 0.2192 - accuracy: 0.6330 - precision: 0.6443 - recall: 0.6124 - f1_score: 0.6279 - val_loss: 0.2318 - val_accuracy: 0.6161 - val_precision: 0.6257 - val_recall: 0.5992 - val_f1_score: 0.6121
