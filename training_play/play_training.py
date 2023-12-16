@@ -17,9 +17,11 @@ from play_training_data_prep_json import get_train_data
 
 
 # This function generates training data from a list of files
-def data_generator(list_files: list, batch_size: int = 10000):
+def data_generator(list_files: list, batch_size: int = 1000):
     # Convert PosixPath objects to strings
     list_files = [str(path) for path in list_files]
+
+    logger.info("Starting data generation...")  # Log the start of data generation
 
     files_dataset = tf.data.Dataset.from_tensor_slices(list_files)
     dataset = files_dataset.interleave(
@@ -35,8 +37,9 @@ def data_generator(list_files: list, batch_size: int = 10000):
     dataset = dataset.map(lambda x, y: (tf.reshape(x, (82,)), tf.reshape(y, (36,))))
 
     # Shuffle and batch the dataset
-    dataset = dataset.shuffle(buffer_size=10000).batch(batch_size)
+    dataset = dataset.shuffle(buffer_size=1000).batch(batch_size)
 
+    logger.info("Data generation completed.")  # Log the end of data generation
     return dataset.prefetch(tf.data.experimental.AUTOTUNE)
 
     # while True:
@@ -65,12 +68,17 @@ def train_model(learning_model, train_dataset, val_dataset):
     # open TensorBoard with: 'tensorboard --logdir=logs' in separate terminal
     tb_callback = TensorBoard(log_dir='./logs', histogram_freq=1, write_graph=True)
 
+    logger.info("Starting training...")  # Log the start of training
+
     model_history = learning_model.fit(
         train_dataset,
         epochs=10,
         callbacks=[tb_callback],
         validation_data=val_dataset
     )
+
+    logger.info("Training completed.")  # Log the end of training
+
     return model_history
 
 
