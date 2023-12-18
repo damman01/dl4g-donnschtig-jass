@@ -1,0 +1,8 @@
+FROM tensorflow/tensorflow:latest
+
+WORKDIR /app
+COPY training_play/logs /logs
+
+EXPOSE 6006
+
+CMD tensorboard --logdir=/logs --bind_all

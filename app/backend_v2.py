@@ -1,4 +1,5 @@
 import json
+import os
 
 import jass.game.rule_schieber as rule_schieber
 import numpy as np
@@ -10,79 +11,41 @@ from keras.models import load_model
 from training_play.play_training_data_prep_json import get_data_for_play
 
 
-def have_puur_with_four(hand: np.ndarray) -> np.ndarray:
-    result = np.zeros(4, dtype=int)
-
-    for color in range(4):
-        # Check if the player has the Jack of the current color.
-        if hand[color * 9 + 3] == 1:
-            # Count the number of cards of the current color.
-            num_cards = np.sum(hand[color * 9:color * 9 + 8])
-            # If the player has 4 or more cards of the current color, the rule is fulfilled.
-            if num_cards >= 4:
-                result[color] = 1
-    return result
-
-
-def calculate_trump_selection_score(cards, trump: int) -> int:
-    """Calculates the score of a hand for selecting trump.
-
-    Args:
-        cards: A list of 9 cards, encoded as integers.
-        trump: The trump suit.
-
-    Returns:
-        The score of the hand for selecting trump.
-    """
-    # Score for each card of a color from Ace to 6
-
-    # score if the color is trump
-    trump_score = [15, 10, 7, 25, 6, 19, 5, 5, 5]
-    # score if the color is not trump
-    no_trump_score = [9, 7, 5, 2, 1, 0, 0, 0, 0]
-    # score if obenabe is selected (all colors)
-    obenabe_score = [14, 10, 8, 7, 5, 0, 5, 0, 0, ]
-    # score if uneufe is selected (all colors)
-    uneufe_score = [0, 2, 1, 1, 5, 5, 7, 9, 11]
-
-    score = 0
-    for card in cards:
-        color = card // 9
-        offset = card - (color * 9)
-
-        # If the color is trump, use the trump score.
-        if color == trump:
-            score += trump_score[offset]
-        # If obenabe is selected, use the obenabe score.
-        elif trump == OBE_ABE:
-            score += obenabe_score[offset]
-        # If uneufe is selected, use the uneufe score.
-        elif trump == UNE_UFE:
-            score += uneufe_score[offset]
-        # If the color is not trump and obenabe is not selected, use the no-trump score.
-        elif color != trump:
-            score += no_trump_score[offset]
-
-    return score
-
-
 class Backend:
+    """
+    The Backend class is responsible for making predictions for the game of Jass.
+    It uses trained models to predict the trump and the card to play.
+    """
 
-    def play_card(self, obs: GameObservation):
+    def __init__(self):
+        running_in_docker = os.getenv('RUNNING_IN_DOCKER', 'false') == 'true'
+        model_path = '/app/models/' if running_in_docker else '../models/'
+        self.trump_model = load_model(model_path + 'trumpModel.keras')
+        self.play_model = load_model(model_path + 'playModel.keras')
+
+    def play_card(self, obs: GameObservation) -> int:
+        """
+        Predicts the card to play based on the game observation.
+
+        Args:
+        obs (GameObservation): The game observation.
+
+        Returns:
+        int: The index of the card to play.
+        """
         prepared_data = self.prepare_play_data(obs)
 
-        schieber = rule_schieber.RuleSchieber()
-        valid = schieber.get_valid_cards_from_obs(obs)
-        predictions = self.make_play_prediction(prepared_data)[0]
+        valid = rule_schieber.RuleSchieber().get_valid_cards_from_obs(obs)
+        predictions = self.play_model.predict(prepared_data)[0]
 
         # Use the mask to set the invalid predictions to 0
         predictions[~valid.astype(bool)] = 0
 
         return np.argmax(predictions)
 
-    def select_trump(self, obs: GameObservation):
+    def select_trump(self, obs: GameObservation) -> int:
         """
-        Determine trump action for the given observation.
+        Predicts the trump to select based on the game observation.
 
         Args:
             obs (GameObservation): The game observation, it must be in a state for trump selection.
@@ -91,26 +54,32 @@ class Backend:
             int: Selected trump as encoded in jass.game.const or jass.game.const.PUSH.
         """
         prepared_data = self.prepare_trump_data(obs)
-        return self.make_trump_prediction(prepared_data)
-
-    def make_trump_prediction(self, prepared_data: np.ndarray) -> int:
-        model = load_model('../models/trumpModel.keras')
-        predictions = model.predict(np.array([prepared_data]))
-        return np.argmax(predictions)
-
-    def make_play_prediction(self, prepared_data: np.ndarray):
-        model = load_model('../models/playModel.keras')
-        predictions = model.predict(prepared_data)
-
-        return predictions
+        return np.argmax(self.trump_model.predict(np.array([prepared_data])))
 
     def prepare_play_data(self, obs: GameObservation) -> np.ndarray:
+        """
+        Prepares the play data based on the game observation.
+
+        Args:
+            obs (GameObservation): The game observation.
+
+        Returns:
+            np.ndarray: The prepared play data.
+        """
         # add {"obs": to the beginning of the string and "}" to the end of the string
         json_string = '{"obs":' + json.dumps(obs.to_json()) + '}'
-        print("JSON String:", json_string)
         return get_data_for_play(json_string)
 
     def prepare_trump_data(self, obs: GameObservation) -> np.ndarray:
+        """
+        Prepares the trump data based on the game observation.
+
+        Args:
+            obs (GameObservation): The game observation.
+
+        Returns:
+            np.ndarray: The prepared trump data.
+        """
         diamonds = obs.hand[0:9]
         hearts = obs.hand[9:17]
         spades = obs.hand[17:26]

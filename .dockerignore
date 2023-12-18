@@ -1,0 +1,28 @@
+# Ignore git directories
+.git
+.gitignore
+
+# Ignore all log files
+*.log
+
+# Ignore all local configuration files
+*.cfg
+
+# Ignore Python compiled files
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+
+# Ignore directories
+test/
+training_play/test_files/jass_game_0001
+training_play/gamelogs/
+training/trump/
+
+io/
+data/
+
+.idea
+

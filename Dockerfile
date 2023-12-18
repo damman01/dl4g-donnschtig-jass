@@ -8,6 +8,7 @@ ENV PYTHONUNBUFFERED 1
 ENV FLASK_APP=/app/app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV FLASK_RUN_PORT=5000
+ENV RUNNING_IN_DOCKER=true
 
 COPY /app/requirements.txt /app/
 
@@ -23,4 +24,6 @@ COPY models /app/models/
 COPY app /app
 
 EXPOSE 5000
+EXPOSE 6006
+
 CMD ["flask", "run"]
