@@ -13,15 +13,14 @@ from tensorflow import keras
 
 from play_training_data_prep_json import get_train_data
 
-#add a constant value for the shape of the input data
+# add a constant value for the shape of the input data
 INPUT_FEATURES = 46
+
 
 # This function generates training data from a list of files
 def data_generator(list_files: list, batch_size: int = 36):
     # Convert PosixPath objects to strings
     list_files = [str(path) for path in list_files]
-
-    logger.info("Starting data generation...")  # Log the start of data generation
 
     files_dataset = tf.data.Dataset.from_tensor_slices(list_files)
     dataset = files_dataset.interleave(
@@ -39,7 +38,6 @@ def data_generator(list_files: list, batch_size: int = 36):
     # Shuffle and batch the dataset
     dataset = dataset.batch(batch_size)
 
-    logger.info("Data generation completed.")  # Log the end of data generation
     return dataset.cache().prefetch(tf.data.experimental.AUTOTUNE)
 
     # while True:

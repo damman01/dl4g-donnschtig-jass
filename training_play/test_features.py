@@ -27,7 +27,7 @@ for file_name in file_list:
             print("x_train length_shape:", x_train.shape)
             print("y_categorical_data_train length:", len(y_categorical_data_train))
             print("y_categorical_data_train length_shape:", y_categorical_data_train.shape)
-# 
+
 # Save the DataFrame to a CSV file
 x_train.to_csv('x_train.csv', index=False)
 

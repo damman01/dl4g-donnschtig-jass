@@ -1,21 +1,85 @@
+import json
 import random
 
-import jass.game.rule_schieber
-from jass.game.game_util import *
-from jass.game.const import *
+import jass.game.rule_schieber as rule_schieber
+import numpy as np
+from jass.game.const import OBE_ABE, UNE_UFE
+
 from jass.game.game_observation import GameObservation
 from keras.models import load_model
+
+from training_play.play_training_data_prep_json import get_data_for_play
+
+
+def have_puur_with_four(hand: np.ndarray) -> np.ndarray:
+    result = np.zeros(4, dtype=int)
+
+    for color in range(4):
+        # Check if the player has the Jack of the current color.
+        if hand[color * 9 + 3] == 1:
+            # Count the number of cards of the current color.
+            num_cards = np.sum(hand[color * 9:color * 9 + 8])
+            # If the player has 4 or more cards of the current color, the rule is fulfilled.
+            if num_cards >= 4:
+                result[color] = 1
+    return result
+
+
+def calculate_trump_selection_score(cards, trump: int) -> int:
+    """Calculates the score of a hand for selecting trump.
+
+    Args:
+        cards: A list of 9 cards, encoded as integers.
+        trump: The trump suit.
+
+    Returns:
+        The score of the hand for selecting trump.
+    """
+    # Score for each card of a color from Ace to 6
+
+    # score if the color is trump
+    trump_score = [15, 10, 7, 25, 6, 19, 5, 5, 5]
+    # score if the color is not trump
+    no_trump_score = [9, 7, 5, 2, 1, 0, 0, 0, 0]
+    # score if obenabe is selected (all colors)
+    obenabe_score = [14, 10, 8, 7, 5, 0, 5, 0, 0, ]
+    # score if uneufe is selected (all colors)
+    uneufe_score = [0, 2, 1, 1, 5, 5, 7, 9, 11]
+
+    score = 0
+    for card in cards:
+        color = card // 9
+        offset = card - (color * 9)
+
+        # If the color is trump, use the trump score.
+        if color == trump:
+            score += trump_score[offset]
+        # If obenabe is selected, use the obenabe score.
+        elif trump == OBE_ABE:
+            score += obenabe_score[offset]
+        # If uneufe is selected, use the uneufe score.
+        elif trump == UNE_UFE:
+            score += uneufe_score[offset]
+        # If the color is not trump and obenabe is not selected, use the no-trump score.
+        elif color != trump:
+            score += no_trump_score[offset]
+
+    return score
 
 
 class Backend:
 
     def play_card(self, obs: GameObservation):
-        schieber = jass.game.rule_schieber.RuleSchieber()
-        valid = jass.game.rule_schieber.RuleSchieber.get_valid_cards_from_obs(schieber, obs)
-        array = convert_one_hot_encoded_cards_to_str_encoded_list(valid)
-        rdm = random.choice(array)
-        card_id = card_ids[rdm]
-        return card_id
+        prepared_data = self.prepare_play_data(obs)
+
+        schieber = rule_schieber.RuleSchieber()
+        valid = schieber.get_valid_cards_from_obs(obs)
+        predictions = self.make_play_prediction(prepared_data)[0]
+
+        # Use the mask to set the invalid predictions to 0
+        predictions[~valid.astype(bool)] = 0
+
+        return np.argmax(predictions)
 
     def select_trump(self, obs: GameObservation):
         """
@@ -30,22 +94,22 @@ class Backend:
         prepared_data = self.prepare_trump_data(obs)
         return self.make_trump_prediction(prepared_data)
 
-
     def make_trump_prediction(self, prepared_data: np.ndarray) -> int:
         model = load_model('../models/trumpModel.keras')
         predictions = model.predict(np.array([prepared_data]))
         return np.argmax(predictions)
 
-
-    def make_play_prediction(self, prepared_data: np.ndarray) -> int:
+    def make_play_prediction(self, prepared_data: np.ndarray):
         model = load_model('../models/playModel.keras')
         predictions = model.predict(prepared_data)
-        return np.argmax(predictions)
+
+        return predictions
 
     def prepare_play_data(self, obs: GameObservation) -> np.ndarray:
-        #todo prepare and return data from GameObservation
-        return 0
-
+        # add {"obs": to the beginning of the string and "}" to the end of the string
+        json_string = '{"obs":' + json.dumps(obs.to_json()) + '}'
+        print("JSON String:", json_string)
+        return get_data_for_play(json_string)
 
     def prepare_trump_data(self, obs: GameObservation) -> np.ndarray:
         diamonds = obs.hand[0:9]
@@ -89,59 +153,3 @@ class Backend:
         ))
 
         return x_predict_trump
-
-
-    def have_puur_with_four(self, hand: np.ndarray) -> np.ndarray:
-        result = np.zeros(4, dtype=int)
-
-        for color in range(4):
-            # Check if the player has the Jack of the current color.
-            if hand[color * 9 + 3] == 1:
-                # Count the number of cards of the current color.
-                num_cards = np.sum(hand[color * 9:color * 9 + 8])
-                # If the player has 4 or more cards of the current color, the rule is fulfilled.
-                if num_cards >= 4:
-                    result[color] = 1
-        return result
-
-
-    def calculate_trump_selection_score(self, cards, trump: int) -> int:
-        """Calculates the score of a hand for selecting trump.
-
-        Args:
-            cards: A list of 9 cards, encoded as integers.
-            trump: The trump suit.
-
-        Returns:
-            The score of the hand for selecting trump.
-        """
-        # Score for each card of a color from Ace to 6
-
-        # score if the color is trump
-        trump_score = [15, 10, 7, 25, 6, 19, 5, 5, 5]
-        # score if the color is not trump
-        no_trump_score = [9, 7, 5, 2, 1, 0, 0, 0, 0]
-        # score if obenabe is selected (all colors)
-        obenabe_score = [14, 10, 8, 7, 5, 0, 5, 0, 0, ]
-        # score if uneufe is selected (all colors)
-        uneufe_score = [0, 2, 1, 1, 5, 5, 7, 9, 11]
-
-        score = 0
-        for card in cards:
-            color = card // 9
-            offset = card - (color * 9)
-
-            # If the color is trump, use the trump score.
-            if color == trump:
-                score += trump_score[offset]
-            # If obenabe is selected, use the obenabe score.
-            elif trump == OBE_ABE:
-                score += obenabe_score[offset]
-            # If uneufe is selected, use the uneufe score.
-            elif trump == UNE_UFE:
-                score += uneufe_score[offset]
-            # If the color is not trump and obenabe is not selected, use the no-trump score.
-            elif color != trump:
-                score += no_trump_score[offset]
-
-        return score

@@ -1,3 +1,4 @@
+import numpy as np
 from pandas import DataFrame, concat
 import json
 from jass.game.game_state import GameState
@@ -17,6 +18,25 @@ def get_train_data(line) -> (DataFrame, DataFrame):
 
     played_card_array = keras.utils.to_categorical(played_card, num_classes=36)
     label_play = LabelPlay.get_label_play(state, played_card)
+
+    return get_data_from_labelplay(label_play), played_card_array
+
+
+def get_data_for_play(line) -> np.ndarray:
+    """
+    This function takes a line of JSON data and returns the training data and the label data.
+    :param line:
+    :return:
+    """
+    data = json.loads(line)
+    state = GameState.from_json(data.get('obs', {}))
+
+    label_play = LabelPlay.get_label_play(state, -1)
+
+    return get_data_from_labelplay(label_play)
+
+
+def get_data_from_labelplay(label_play):
     data_frame = label_play.to_dataframe()
     feature_ranges = dict(points_in_trick_own=(0, 50), points_in_trick_other=(0, 50), trick_winner=(0, 3),
                           points_in_game_own=(0, 151), points_in_game_other=(0, 151), declared_trump=(0, 3),
@@ -43,22 +63,8 @@ def get_train_data(line) -> (DataFrame, DataFrame):
                           trick_7_card_3=(-1, 35), trick_8_card_0=(-1, 35), trick_8_card_1=(-1, 35),
                           trick_8_card_2=(-1, 35), trick_8_card_3=(-1, 35), trick_card_0=(-1, 35),
                           trick_card_1=(-1, 35), trick_card_2=(-1, 35), trick_card_3=(-1, 35))
-
-    # print("Data Frame before Normalize:", data_frame.head())
-    # data_frame.to_csv('x_train_before.csv', index=False)
-
     # Normalize the data
     for feature, feature_range in feature_ranges.items():
-        # print("Data Frame Feature Value:", data_frame[feature][0])
-        # print("Feature:", feature, "Range:", feature_range)
-        # if the feature is in data_frame Normalize the feature
         if feature in data_frame:
             data_frame[feature] = (data_frame[feature] - feature_range[0]) / (feature_range[1] - feature_range[0])
-        # print("Data Frame Feature Normalized Value:", data_frame[feature][0])
-
-    # data_frame.to_csv('x_train_after.csv', index=False)
-
-    # Convert the DataFrame to a numpy array and reshape it to have a shape of (82,)
-    # data_frame = data_frame.reshape((82,))
-
-    return data_frame, played_card_array
+    return data_frame
