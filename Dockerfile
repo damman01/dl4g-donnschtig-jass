@@ -16,10 +16,9 @@ RUN pip install --upgrade pip
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r /app/requirements.txt
 
-
 # copy files and directories into the container
-COPY training_play/play_training_data_prep_json.py ../training_play/
-COPY models ../models/
+COPY training_play /app/training_play/
+COPY models /app/models/
 
 COPY app /app
 

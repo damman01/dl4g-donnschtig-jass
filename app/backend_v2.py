@@ -1,5 +1,4 @@
 import json
-import random
 
 import jass.game.rule_schieber as rule_schieber
 import numpy as np

@@ -1,9 +1,9 @@
 import numpy as np
-from pandas import DataFrame, concat
+from pandas import DataFrame
 import json
 from jass.game.game_state import GameState
 from tensorflow import keras
-from label_play import LabelPlay
+from training_play.label_play import LabelPlay
 
 
 def get_train_data(line) -> (DataFrame, DataFrame):

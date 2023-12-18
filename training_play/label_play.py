@@ -3,11 +3,11 @@ import logging
 
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass, asdict, field
+from dataclasses import dataclass, field
 
 from jass.game.const import team, next_player, same_team, card_values
 from jass.game.game_state import GameState
-from jass.game.game_util import convert_one_hot_encoded_cards_to_str_encoded_list, get_cards_encoded_from_str
+from jass.game.game_util import get_cards_encoded_from_str
 from jass.game.rule_schieber import RuleSchieber
 
 
